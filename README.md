@@ -56,3 +56,7 @@ It implied following flags:
 - `--skip-rubocop` we'll use standardrb for code formatting instead
 - `--skip-system-test` system tests aren't relevant for an API without a web interface
 - `--skip-thruster` asset serving isn't needed in this API app
+
+### Code formatting
+
+We use [standardrb](https://github.com/standardrb/standard) for Ruby code linting and formatting. Standardrb provides a curated set of RuboCop rules with sensible defaults, ensuring consistent code style across the project. It automatically formats code on commit via a pre-commit hook, reducing manual formatting efforts and maintaining code quality without requiring extensive configuration.
