@@ -1,0 +1,42 @@
+
+FROM ruby:3.4.1-slim
+
+# System dependencies
+RUN apt-get update -qq && \
+    apt-get install --no-install-recommends -y \
+      build-essential \
+      git \
+      libpq-dev \
+      libvips \
+      postgresql-client \
+      curl \
+      pkg-config \
+      nodejs \
+      npm && \
+    rm -rf /var/lib/apt/lists/*
+
+# Create vscode user (UID 1000 to match host on most systems)
+RUN groupadd --gid 1000 vscode && \
+    useradd --uid 1000 --gid 1000 -m vscode -s /bin/bash
+
+# Install bundler
+RUN gem install bundler
+
+WORKDIR /rails
+
+USER vscode
+
+# --- Terminal Customization (Bare Setup) ---
+RUN echo "set editing-mode emacs" >> /home/vscode/.inputrc && \
+    echo "set show-all-if-ambiguous on" >> /home/vscode/.inputrc && \
+    echo "set completion-ignore-case on" >> /home/vscode/.inputrc && \
+    echo 'export PS1="\[\e[32m\]\u@dev\[\e[m\]:\[\e[34m\]\w\[\e[m\]\$ "' >> /home/vscode/.bashrc && \
+    echo "IRB.conf[:SAVE_HISTORY] = 1000" >> /home/vscode/.irbrc && \
+    echo "IRB.conf[:HISTORY_FILE] = '/rails/.irb_history'" >> /home/vscode/.irbrc
+
+ENV RAILS_ENV=development \
+    BUNDLE_PATH=/rails/vendor/bundle \
+    BUNDLE_BIN=/rails/vendor/bundle/bin \
+    GEM_HOME=/rails/vendor/bundle \
+    BINDING="0.0.0.0" \
+    PATH="/rails/vendor/bundle/bin:${PATH}"

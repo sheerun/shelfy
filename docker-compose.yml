@@ -1,0 +1,52 @@
+name: "shelfy"
+
+services:
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+
+    command: bash -c 'rm /rails/tmp/pids/* && bin/setup'
+
+    user: "1000:1000"
+
+    volumes:
+    - .:/rails
+
+    ports:
+      - "3000:3000"
+      - "1234:1234"
+    
+    environment:
+      DB_HOST: db
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: shelfy_development
+      
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+
+    image: postgres:18
+
+    restart: unless-stopped
+
+    volumes:
+    - postgresql:/var/lib/postgresql
+
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: shelfy_development
+
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgresql:

@@ -2,9 +2,9 @@
 // For config options, see the README at: https://github.com/devcontainers/templates/tree/main/src/ruby
 {
   "name": "shelfy",
-  "dockerComposeFile": "compose.yaml",
-  "service": "rails-app",
-  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+  "dockerComposeFile": "../docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/rails",
 
   // Features to add to the dev container. More info: https://containers.dev/features.
   "features": {
@@ -12,20 +12,17 @@
     "ghcr.io/rails/devcontainer/features/postgres-client": {}
   },
 
-  "containerEnv": {
-    "DB_HOST": "postgres"
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "shopify.ruby-lsp"
+      ]
+    }
   },
 
-  // Use 'forwardPorts' to make a list of ports inside the container available locally.
+  "runServices": ["app", "db"],
+
   "forwardPorts": [3000, 5432],
 
-  // Configure tool-specific properties.
-  // "customizations": {},
-
-  // Uncomment to connect as root instead. More info: https://containers.dev/implementors/json_reference/#remoteUser.
-  // "remoteUser": "root",
-
-
-  // Use 'postCreateCommand' to run commands after the container is created.
-  "postCreateCommand": "bin/setup --skip-server"
+  "remoteUser": "vscode"
 }

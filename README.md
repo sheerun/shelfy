@@ -2,6 +2,24 @@
 
 API for a library management system (recruitment task solution)
 
+## Development
+
+To test development stack, simply run:
+
+```sh
+docker compose up
+```
+
+To edit and debug application, issue "Reopen in Container" command in VS Code. LSP, and debugging for tests should work out of the box for tests.
+
+To rebuild container, including "bundle install", issue "Rebuild Container" VS Code command.
+
+The tests can be run by running:
+
+```sh
+bin/rails test
+```
+
 ## Design decisions
 
 Where the specification lacked detail, reasonable assumptions were made to keep the solution self-contained and easy to evaluate, without unnecessary back and forth that would normally occur to develop such an app. The notes below explain important implementation choices and trade-offs.
