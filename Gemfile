@@ -34,5 +34,5 @@ group :development, :test do
   gem "lefthook", require: false
 
   # RSpec for testing [https://rspec.info/]
-  gem "rspec-rails", "~> 7.1"
+  gem "rspec-rails", "~> 8.0"
 end
