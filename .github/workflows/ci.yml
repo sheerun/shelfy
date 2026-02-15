@@ -7,7 +7,7 @@ on:
     branches: [ main ]
 
 jobs:
-  style:
+  lint:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v6
@@ -18,8 +18,8 @@ jobs:
         ruby-version: 3.4.8
         bundler-cache: true
 
-    - name: Run style checks
-      run: bin/ci style
+    - name: Run lint checks
+      run: bin/ci lint
 
   security:
     runs-on: ubuntu-latest

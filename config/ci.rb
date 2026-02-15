@@ -32,7 +32,7 @@ end
 suite_start_time = Time.now
 @suite_failed = false
 
-# SETUP: Required for standard Rails and E2E, excluding security/style checks
+# SETUP: Required for standard Rails and E2E, excluding security/lint checks
 def should_run_group(name, default: true)
   requested_groups = ARGV.map(&:downcase)
   return true if requested_groups.include?(name.downcase)
@@ -46,9 +46,9 @@ run_group("", default: setup_needed) do
   system("bin/setup --skip-server > /dev/null")
 end
 
-# DEFAULT GROUP (Runs on 'script/test')
-run_group("Style", emoji: "🎨") do
-  system("bin/standardrb")
+run_group("Lint", emoji: "🎨") do
+  system("bin/standardrb") &&
+    system("bundle exec database_consistency")
 end
 
 run_group("Security", emoji: "🔒") do

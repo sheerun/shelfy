@@ -38,4 +38,7 @@ group :development, :test do
 
   # API documentation with OpenAPI/Swagger [https://github.com/rswag/rswag]
   gem "rswag-specs"
+
+  # Database consistency checks [https://github.com/djezzzl/database_consistency]
+  gem "database_consistency", require: false
 end

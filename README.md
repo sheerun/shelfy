@@ -24,7 +24,7 @@ Continuous Integration scripts can be run as:
 
 ```sh
 bin/ci rails    # run rails tests
-bin/ci style    # run style checks
+bin/ci lint     # run lint checks
 bin/ci security # run security checks
 bin/ci          # run all checks above
 ```
