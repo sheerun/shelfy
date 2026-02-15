@@ -1,16 +1,71 @@
-# Run using bin/ci
+# bin/ci
 
-CI.run do
-  step "Setup", "bin/setup --skip-server"
+def run_group(name, emoji: nil, default: true, &block)
+  requested_groups = ARGV.map(&:downcase)
+  # Match explicit group (e.g., 'e2e') or fall back to defaults
+  should_run = true if requested_groups.include?(name.downcase)
+  should_run = true if default && (requested_groups.empty? || requested_groups.include?("all"))
 
-  step "Security: Gem audit", "bin/bundler-audit"
-  step "Security: Brakeman code analysis", "bin/brakeman --quiet --no-pager --exit-on-warn --exit-on-error"
+  return unless should_run
 
-  # Optional: set a green GitHub commit status to unblock PR merge.
-  # Requires the `gh` CLI and `gh extension install basecamp/gh-signoff`.
-  # if success?
-  #   step "Signoff: All systems go. Ready for merge and deploy.", "gh signoff"
-  # else
-  #   failure "Signoff: CI failed. Do not merge or deploy.", "Fix the issues and try again."
-  # end
+  if !name.empty?
+    title = "#{emoji} Running #{name} test suite"
+    puts "\n\033[1m#{title}\033[0m"
+    puts "=" * (title.length + 2) + "\n\n"
+  end
+
+  start_time = Time.now
+  success = block.call
+  end_time = Time.now
+  duration = (end_time - start_time).round(2)
+
+  if !name.empty?
+    if success
+      puts "\n\033[1;32m✅ #{name} passed in #{duration}s\033[0m\n"
+    else
+      puts "\n\033[1;31m❌ #{name} failed in #{duration}s\033[0m\n"
+      @suite_failed = true
+    end
+  end
+end
+
+suite_start_time = Time.now
+@suite_failed = false
+
+# SETUP: Required for standard Rails and E2E, excluding security/style checks
+def should_run_group(name, default: true)
+  requested_groups = ARGV.map(&:downcase)
+  return true if requested_groups.include?(name.downcase)
+  return true if default && (requested_groups.empty? || requested_groups.include?("all"))
+  false
+end
+
+setup_needed = should_run_group("Rails") || should_run_group("E2E", default: false)
+
+run_group("", default: setup_needed) do
+  system("bin/setup --skip-server > /dev/null")
+end
+
+# DEFAULT GROUP (Runs on 'script/test')
+run_group("Style", emoji: "🎨") do
+  system("bin/standardrb")
+end
+
+run_group("Security", emoji: "🔒") do
+  system("bin/bundler-audit check") &&
+    system("bin/brakeman --quiet --no-pager --exit-on-warn")
+end
+
+run_group("RSpec", emoji: "🚂") do
+  system("bin/rspec #{ARGV.drop(1).join(" ")}")
+end
+
+suite_end_time = Time.now
+suite_duration = (suite_end_time - suite_start_time).round(2)
+
+if @suite_failed
+  puts "\n\033[1;31m❌ Whole test suite failed in #{suite_duration}s\033[0m\n\n"
+  exit 1
+else
+  puts "\n\033[1;32m✅ Whole test suite passed in #{suite_duration}s\033[0m\n\n"
 end

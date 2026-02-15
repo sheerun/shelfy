@@ -32,4 +32,7 @@ group :development, :test do
 
   # Git hooks [https://github.com/evilmartians/lefthook]
   gem "lefthook", require: false
+
+  # RSpec for testing [https://rspec.info/]
+  gem "rspec-rails", "~> 7.1"
 end

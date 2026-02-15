@@ -14,10 +14,19 @@ To edit and debug application, issue "Reopen in Container" command in VS Code. L
 
 To rebuild container, including "bundle install", issue "Rebuild Container" VS Code command.
 
-The tests can be run by running:
+The tests can be executed by running:
 
 ```sh
-bin/rails test
+bin/rspec
+```
+
+Continuous Integration scripts can be run as:
+
+```sh
+bin/ci rails    # run rails tests
+bin/ci style    # run style checks
+bin/ci security # run security checks
+bin/ci          # run all checks above
 ```
 
 ## Design decisions
@@ -59,4 +68,8 @@ It implied following flags:
 
 ### Code formatting
 
-We use [standardrb](https://github.com/standardrb/standard) for Ruby code linting and formatting. Standardrb provides a curated set of RuboCop rules with sensible defaults, ensuring consistent code style across the project. It automatically formats code on commit via a pre-commit hook, reducing manual formatting efforts and maintaining code quality without requiring extensive configuration.
+[Standardrb](https://github.com/standardrb/standard) is used for formatting and linting. It is known for its sensible defaults, ensuring consistent code style across the project. It automatically formats code on commit via a pre-commit hook to avoid unnecessary CI fails.
+
+### Testing
+
+RSpec is the chosen testing framework for this project for its behavior-driven syntax.

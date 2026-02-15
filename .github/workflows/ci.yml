@@ -1,26 +1,54 @@
 name: CI
 
 on:
-  pull_request:
   push:
+    branches: [ main ]
+  pull_request:
     branches: [ main ]
 
 jobs:
-  scan_ruby:
+  test:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: shelfy_testing
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    strategy:
+      matrix:
+        group: [style, security, rspec]
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
+    - uses: actions/checkout@v6
 
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          bundler-cache: true
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: 3.4.8
+        bundler-cache: true
 
-      - name: Scan for common Rails security vulnerabilities using static analysis
-        run: bin/brakeman --no-pager
-      
-      - name: Scan for known security vulnerabilities in gems used
-        run: bin/bundler-audit
+    - name: Install dependencies
+      run: bundle install
+
+    - name: Set up database
+      env:
+        RAILS_ENV: test
+        DATABASE_URL: postgres://postgres:postgres@localhost:5432/shelfy_test
+      run: |
+        bin/setup --skip-server
+
+    - name: Run ${{ matrix.group }} tests
+      env:
+        RAILS_ENV: test
+        DATABASE_URL: postgres://postgres:postgres@localhost:5432/shelfy_test
+      run: |
+        bin/ci ${{ matrix.group }}
       
