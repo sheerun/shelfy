@@ -7,7 +7,35 @@ on:
     branches: [ main ]
 
 jobs:
-  test:
+  style:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v6
+
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: 3.4.8
+        bundler-cache: true
+
+    - name: Run style checks
+      run: bin/ci style
+
+  security:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v6
+
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: 3.4.8
+        bundler-cache: true
+
+    - name: Run security checks
+      run: bin/ci security
+
+  rspec:
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -24,10 +52,6 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 
-    strategy:
-      matrix:
-        group: [style, security, rspec]
-
     steps:
     - uses: actions/checkout@v6
 
@@ -37,9 +61,6 @@ jobs:
         ruby-version: 3.4.8
         bundler-cache: true
 
-    - name: Install dependencies
-      run: bundle install
-
     - name: Set up database
       env:
         RAILS_ENV: test
@@ -47,9 +68,9 @@ jobs:
       run: |
         bin/setup --skip-server
 
-    - name: Run ${{ matrix.group }} tests
+    - name: Run RSpec tests
       env:
         RAILS_ENV: test
         DATABASE_URL: postgres://postgres:postgres@localhost:5432/shelfy_test
       run: |
-        bin/ci ${{ matrix.group }}
+        bin/ci rspec
