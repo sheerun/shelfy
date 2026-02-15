@@ -5,7 +5,7 @@ RSpec.describe "V1 Root", type: :request do
     it "redirects to API documentation" do
       get "/v1"
       expect(response).to have_http_status(:redirect)
-      expect(response).to redirect_to("/v1/docs/index.html")
+      expect(response).to redirect_to("/v1/docs")
     end
   end
 end

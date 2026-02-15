@@ -2,5 +2,8 @@
 require_relative "../config/boot"
 require "active_support/continuous_integration"
 
+# Set RAILS_ENV to "test" if not already set, to avoid running tests in development or production environments.
+ENV["RAILS_ENV"] = "test"
+
 CI = ActiveSupport::ContinuousIntegration
 require_relative "../config/ci.rb"
