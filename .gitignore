@@ -34,3 +34,6 @@
 /vendor/bundle/*
 
 .irb_history
+
+.github/copilot-instructions.md
+node_modules

@@ -29,6 +29,8 @@ bin/ci security # run security checks
 bin/ci          # run all checks above
 ```
 
+
+
 ## Design decisions
 
 Where the specification lacked detail, reasonable assumptions were made to keep the solution self-contained and easy to evaluate, without unnecessary back and forth that would normally occur to develop such an app. The notes below explain important implementation choices and trade-offs.
@@ -73,3 +75,28 @@ It implied following flags:
 ### Testing
 
 RSpec is the chosen testing framework for this project for its behavior-driven syntax.
+
+### API Documentation
+
+The API documentation is generated using rswag and Scalar. To generate the OpenAPI specification and static documentation:
+
+```sh
+script/docs
+```
+
+This will:
+- Generate `public/v1/docs/openapi.json` from the rswag tests
+- Create an HTML documentation at `public/v1/docs/index.html` with the OpenAPI spec embedded using Scalar's API reference
+
+The API is accessible at `/v1` which redirects to the documentation.
+
+## Health Endpoints
+
+The application provides health check endpoints for monitoring and deployment:
+
+- `GET /v1/health/live` - Liveness probe (returns `{"status": "ok"}`)
+- `GET /v1/health/ready` - Readiness probe (returns `{"status": "ok", "uptime": 123.4, "checks": {"database": "ok"}}`)
+
+These endpoints are suitable for Kubernetes liveness and readiness probes.
+
+

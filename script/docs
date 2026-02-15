@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+APP_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$APP_ROOT"
+
+OPENAPI_PATH="public/v1/docs/openapi.json"
+REDOC_PATH="public/v1/docs/index.html"
+
+echo "==> Generating OpenAPI spec..."
+mkdir -p "$(dirname "$OPENAPI_PATH")"
+
+RAILS_ENV=test bin/rspec spec/requests/ \
+  --format Rswag::Specs::SwaggerFormatter \
+  --order defined \
+  --no-color 2>&1 | tail -5
+
+if [ ! -f "$OPENAPI_PATH" ]; then
+  echo "ERROR: OpenAPI spec was not generated at $OPENAPI_PATH"
+  exit 1
+fi
+
+echo "    Generated $OPENAPI_PATH"
+
+echo "==> Generating Scalar static documentation..."
+cat > "$REDOC_PATH" <<HTML
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Shelfy API Documentation</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head>
+  <body>
+    <script
+      id="api-reference"
+      type="application/json"
+    >
+HTML
+
+# Embed the OpenAPI spec directly in the HTML
+cat "$OPENAPI_PATH" >> "$REDOC_PATH"
+
+cat >> "$REDOC_PATH" <<'HTML'
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference"></script>
+  </body>
+</html>
+HTML
+
+echo "    Generated $REDOC_PATH"
+echo "==> Done!"

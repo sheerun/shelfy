@@ -35,4 +35,7 @@ group :development, :test do
 
   # RSpec for testing [https://rspec.info/]
   gem "rspec-rails", "~> 7.1"
+
+  # API documentation with OpenAPI/Swagger [https://github.com/rswag/rswag]
+  gem "rswag-specs"
 end
