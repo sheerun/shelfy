@@ -34,7 +34,7 @@ group :development, :test do
   gem "lefthook", require: false
 
   # RSpec for testing [https://rspec.info/]
-  gem "rspec-rails", "~> 7.1"
+  gem "rspec-rails", "~> 8.0"
 
   # API documentation with OpenAPI/Swagger [https://github.com/rswag/rswag]
   gem "rswag-specs"
