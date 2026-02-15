@@ -47,7 +47,7 @@ run_group("", default: setup_needed) do
 end
 
 run_group("Lint", emoji: "🎨") do
-  system("bin/standardrb") &&
+  system("bin/lint") &&
     system("bundle exec database_consistency")
 end
 

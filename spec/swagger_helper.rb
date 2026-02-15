@@ -4,7 +4,7 @@ RSpec.configure do |config|
   config.openapi_root = Rails.root.join("public").to_s
 
   config.openapi_specs = {
-    "v1/docs/openapi.json" => {
+    "docs/openapi.json" => {
       openapi: "3.0.3",
       info: {
         title: "Shelfy API",

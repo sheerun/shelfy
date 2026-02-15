@@ -1,0 +1,6 @@
+#!/usr/bin/env ruby
+require "bundler/setup"
+
+ARGV.unshift("--fix")
+
+load Gem.bin_path("standard", "standardrb")

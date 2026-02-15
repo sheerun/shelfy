@@ -1,11 +1,11 @@
 require "rails_helper"
 
-RSpec.describe "V1 Root", type: :request do
-  describe "GET /v1" do
+RSpec.describe "API root", type: :request do
+  describe "GET /" do
     it "redirects to API documentation" do
-      get "/v1"
+      get "/"
       expect(response).to have_http_status(:redirect)
-      expect(response).to redirect_to("/v1/docs")
+      expect(response).to redirect_to("/docs")
     end
   end
 end

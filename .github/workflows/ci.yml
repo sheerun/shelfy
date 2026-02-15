@@ -19,7 +19,7 @@ jobs:
         bundler-cache: true
 
     - name: Run lint checks
-      run: bin/ci lint
+      run: bin/lint
 
   security:
     runs-on: ubuntu-latest

@@ -6,5 +6,5 @@ pre-commit:
   jobs:
     - name: standardrb
       glob: "*.{rb,rake,Gemfile,Rakefile,config.ru}"
-      run: bundle exec standardrb --fix {staged_files}
+      run: bin/format {staged_files}
       stage_fixed: true

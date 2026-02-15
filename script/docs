@@ -4,8 +4,8 @@ set -euo pipefail
 APP_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$APP_ROOT"
 
-OPENAPI_PATH="public/v1/docs/openapi.json"
-REDOC_PATH="public/v1/docs/index.html"
+OPENAPI_PATH="public/docs/openapi.json"
+REDOC_PATH="public/docs/index.html"
 
 echo "==> Generating OpenAPI spec..."
 mkdir -p "$(dirname "$OPENAPI_PATH")"

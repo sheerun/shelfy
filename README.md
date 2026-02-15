@@ -78,24 +78,16 @@ RSpec is the chosen testing framework for this project for its behavior-driven s
 
 ### API Documentation
 
-The API documentation is generated using rswag and Scalar. To generate the OpenAPI specification and static documentation:
+The API is accessible at `/` which redirects to the documentation.
 
-```sh
-script/docs
-```
-
-This will:
-- Generate `public/v1/docs/openapi.json` from the rswag tests
-- Create an HTML documentation at `public/v1/docs/index.html` with the OpenAPI spec embedded using Scalar's API reference
-
-The API is accessible at `/v1` which redirects to the documentation.
+The API documentation is generated using [rswag](https://github.com/rswag/rswag) from api specifications at `spec/requests` with [Scalar](https://scalar.com/) dashboard at `/docs` api endpoint. To re-generate dashboard one can use `script/docs` command.
 
 ## Health Endpoints
 
 The application provides health check endpoints for monitoring and deployment:
 
-- `GET /v1/health/live` - Liveness probe (returns `{"status": "ok"}`)
-- `GET /v1/health/ready` - Readiness probe (returns `{"status": "ok", "uptime": 123.4, "checks": {"database": "ok"}}`)
+- `GET /health/live` - Liveness probe (returns `{"status": "ok"}`)
+- `GET /health/ready` - Readiness probe (returns `{"status": "ok", "uptime": 123.4, "checks": {"database": "ok"}}`)
 
 These endpoints are suitable for Kubernetes liveness and readiness probes.
 

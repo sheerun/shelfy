@@ -1,7 +1,7 @@
 require "swagger_helper"
 
 RSpec.describe "Health", type: :request do
-  path "/v1/health/live" do
+  path "/health/live" do
     get "Liveness probe" do
       tags "Health"
       description "Returns 200 if the application is running. Used for Kubernetes liveness probes."
@@ -22,7 +22,7 @@ RSpec.describe "Health", type: :request do
     end
   end
 
-  path "/v1/health/ready" do
+  path "/health/ready" do
     get "Readiness probe" do
       tags "Health"
       description "Returns 200 if the application is ready to serve requests. " \
