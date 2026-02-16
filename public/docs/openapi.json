@@ -137,9 +137,428 @@
           }
         }
       }
+    },
+    "/readers": {
+      "get": {
+        "summary": "List readers",
+        "tags": [
+          "Readers"
+        ],
+        "description": "Returns a paginated list of all readers",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "description": "Page number (default: 1)",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "required": false,
+            "description": "Items per page (default: 20, max: 50)",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Readers listed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Reader"
+                      }
+                    },
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "total": {
+                          "type": "integer"
+                        },
+                        "page": {
+                          "type": "integer"
+                        },
+                        "per_page": {
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "total",
+                        "page",
+                        "per_page"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "meta"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Register a new reader",
+        "tags": [
+          "Readers"
+        ],
+        "description": "Creates a new reader with the given attributes",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "Reader registered successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Reader"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Duplicate email",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "message"
+                      ]
+                    },
+                    "errors": {
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "reader": {
+                    "type": "object",
+                    "properties": {
+                      "serial_number": {
+                        "type": "string",
+                        "example": "100001"
+                      },
+                      "email": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "reader@example.com"
+                      },
+                      "full_name": {
+                        "type": "string",
+                        "example": "Jane Doe"
+                      }
+                    },
+                    "required": [
+                      "serial_number",
+                      "email",
+                      "full_name"
+                    ]
+                  }
+                },
+                "required": [
+                  "reader"
+                ]
+              },
+              "examples": {
+                "valid_reader": {
+                  "summary": "Valid reader registration",
+                  "value": {
+                    "reader": {
+                      "serial_number": "100001",
+                      "email": "test@example.com",
+                      "full_name": "Jane Doe"
+                    }
+                  }
+                },
+                "invalid_reader": {
+                  "summary": "Invalid reader - missing fields",
+                  "value": {
+                    "reader": {
+                      "serial_number": "",
+                      "email": "",
+                      "full_name": ""
+                    }
+                  }
+                },
+                "duplicate_email": {
+                  "summary": "Duplicate email address",
+                  "value": {
+                    "reader": {
+                      "serial_number": "200001",
+                      "email": "taken@example.com",
+                      "full_name": "Another Reader"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/readers/{id}": {
+      "get": {
+        "summary": "Get a reader",
+        "tags": [
+          "Readers"
+        ],
+        "description": "Returns a single reader by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "format": "uuid",
+            "description": "Reader ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Reader found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Reader"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Reader not found"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update a reader",
+        "tags": [
+          "Readers"
+        ],
+        "description": "Updates an existing reader's attributes",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "format": "uuid",
+            "description": "Reader ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Reader updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Reader"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Reader not found"
+          },
+          "422": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "message"
+                      ]
+                    },
+                    "errors": {
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "reader": {
+                    "type": "object",
+                    "properties": {
+                      "serial_number": {
+                        "type": "string",
+                        "example": "200002"
+                      },
+                      "email": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "updated@example.com"
+                      },
+                      "full_name": {
+                        "type": "string",
+                        "example": "Updated Name"
+                      }
+                    }
+                  }
+                },
+                "required": [
+                  "reader"
+                ]
+              },
+              "examples": {
+                "update_name": {
+                  "summary": "Update reader name",
+                  "value": {
+                    "reader": {
+                      "full_name": "Updated Name"
+                    }
+                  }
+                },
+                "duplicate_email_update": {
+                  "summary": "Update with duplicate email",
+                  "value": {
+                    "reader": {
+                      "email": "taken@example.com"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a reader",
+        "tags": [
+          "Readers"
+        ],
+        "description": "Removes a reader from the system",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "format": "uuid",
+            "description": "Reader ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Reader deleted successfully"
+          },
+          "404": {
+            "description": "Reader not found"
+          }
+        }
+      }
     }
   },
   "components": {
-    "schemas": {}
+    "schemas": {
+      "Reader": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "serial_number": {
+            "type": "string",
+            "example": "100001"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "reader@example.com"
+          },
+          "full_name": {
+            "type": "string",
+            "example": "Jane Doe"
+          }
+        },
+        "required": [
+          "id",
+          "serial_number",
+          "email",
+          "full_name"
+        ]
+      }
+    }
   }
 }

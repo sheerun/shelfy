@@ -19,6 +19,9 @@ gem "solid_queue"
 # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin Ajax possible
 # gem "rack-cors"
 
+# JSON serialization [https://github.com/procore-oss/blueprinter]
+gem "blueprinter"
+
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[mri windows], require: "debug/prelude"
@@ -43,4 +46,10 @@ group :development, :test do
 
   # Database consistency checks [https://github.com/djezzzl/database_consistency]
   gem "database_consistency", require: false
+
+  # Factory Bot for test data [https://github.com/thoughtbot/factory_bot_rails]
+  gem "factory_bot_rails"
+
+  # Faker for generating test data [https://github.com/faker-ruby/faker]
+  gem "faker"
 end

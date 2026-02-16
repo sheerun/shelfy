@@ -5,4 +5,6 @@ Rails.application.routes.draw do
     get "live"
     get "ready"
   end
+
+  resources :readers, only: [:index, :show, :create, :update, :destroy]
 end

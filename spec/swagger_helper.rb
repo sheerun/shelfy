@@ -22,7 +22,18 @@ RSpec.configure do |config|
       ],
       paths: {},
       components: {
-        schemas: {}
+        schemas: {
+          Reader: {
+            type: :object,
+            properties: {
+              id: {type: :string, format: :uuid},
+              serial_number: {type: :string, example: "100001"},
+              email: {type: :string, format: :email, example: "reader@example.com"},
+              full_name: {type: :string, example: "Jane Doe"}
+            },
+            required: %w[id serial_number email full_name]
+          }
+        }
       }
     }
   }
