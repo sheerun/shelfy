@@ -46,6 +46,9 @@ RSpec.configure do |config|
   # FactoryBot methods
   config.include FactoryBot::Syntax::Methods
 
+  # Time helpers (travel_to, freeze_time, etc.)
+  config.include ActiveSupport::Testing::TimeHelpers
+
   # You can uncomment this line to turn off ActiveRecord support entirely.
   # config.use_active_record = false
 

@@ -5,6 +5,7 @@ class BookBorrow < ApplicationRecord
 
   belongs_to :book
   belongs_to :reader
+  has_many :reminders, dependent: :destroy
 
   validates :borrow_date, presence: true
   validates :due_date, presence: true

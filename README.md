@@ -1,4 +1,4 @@
-# README
+# Shelfy Library
 
 API for a library management system (recruitment task solution)
 

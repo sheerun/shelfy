@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_16_051337) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_16_054901) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -46,6 +46,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_16_051337) do
     t.index ["serial_number"], name: "index_readers_on_serial_number", unique: true
   end
 
+  create_table "reminders", id: :uuid, default: -> { "uuidv7()" }, force: :cascade do |t|
+    t.uuid "book_borrow_id", null: false
+    t.datetime "created_at", null: false
+    t.string "reminder_type", null: false
+    t.date "scheduled_for", null: false
+    t.datetime "sent_at"
+    t.datetime "updated_at", null: false
+    t.index ["book_borrow_id", "reminder_type"], name: "index_reminders_on_book_borrow_id_and_reminder_type", unique: true
+    t.index ["scheduled_for", "sent_at"], name: "index_reminders_on_scheduled_for_and_sent_at"
+  end
+
   add_foreign_key "book_borrows", "books"
   add_foreign_key "book_borrows", "readers"
+  add_foreign_key "reminders", "book_borrows"
 end

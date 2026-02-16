@@ -1,0 +1,20 @@
+Hello <%= @reader.full_name %>,
+
+<% if @reminder.reminder_type == "3_days_warning" %>
+This is a friendly reminder that the following book is due for return in 3 days:
+<% else %>
+URGENT: The following book is due for return today:
+<% end %>
+
+Book Title: <%= @book.title %>
+Serial Number: <%= @book.serial_number %>
+Due Date: <%= @due_date.strftime("%B %d, %Y") %>
+
+<% if @reminder.reminder_type == "3_days_warning" %>
+Please return the book on or before the due date to avoid any late fees.
+<% else %>
+Please return the book immediately to avoid late fees. If you have already returned it, please disregard this message.
+<% end %>
+
+Thank you,
+Shelfy Library
