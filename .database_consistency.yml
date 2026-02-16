@@ -1,0 +1,7 @@
+DatabaseConsistency:
+  enabled: true
+
+RedundantIndexChecker:
+  BookBorrow:
+    index_book_borrows_active_borrow:
+      enabled: false

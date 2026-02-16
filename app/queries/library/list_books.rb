@@ -1,11 +1,13 @@
 module Library
   class ListBooks < LibraryQuery
-    attr_accessor :page, :per_page
+    attr_accessor :page, :per_page, :status
 
     MAX_PER_PAGE = 50
     DEFAULT_PER_PAGE = 20
+    VALID_STATUSES = %w[borrowed available].freeze
 
     validate :validate_pagination
+    validate :validate_status
 
     private
 
@@ -16,16 +18,35 @@ module Library
       normalized_per_page = normalized_per_page_number
       offset = (normalized_page - 1) * normalized_per_page
 
-      books = Book.order(:created_at)
-      total = books.count
+      books = base_query
+      total = Book.from(books.except(:order), :books).count
       paginated = books.offset(offset).limit(normalized_per_page)
 
       Library::Result.new(
         data: {
-          data: Library::BookBlueprint.render_as_hash(paginated),
+          data: Library::BookBlueprint.render_as_hash(paginated, view: :with_status),
           meta: {total: total, page: normalized_page, per_page: normalized_per_page}
         }
       )
+    end
+
+    def base_query
+      query = Book
+        .joins("LEFT JOIN book_borrows ON book_borrows.book_id = books.id AND book_borrows.return_date IS NULL")
+        .select(
+          "books.*",
+          "CASE WHEN book_borrows.id IS NOT NULL THEN 'borrowed' ELSE 'available' END AS borrow_status"
+        )
+        .order("books.created_at")
+
+      case status&.downcase
+      when "borrowed"
+        query.where("book_borrows.id IS NOT NULL")
+      when "available"
+        query.where("book_borrows.id IS NULL")
+      else
+        query
+      end
     end
 
     def normalized_page_number
@@ -45,6 +66,12 @@ module Library
       end
       if per_page.present? && per_page.to_s !~ /\A\d+\z/
         errors.add(:per_page, "must be a positive integer")
+      end
+    end
+
+    def validate_status
+      if status.present? && !VALID_STATUSES.include?(status.downcase)
+        errors.add(:status, "must be one of: #{VALID_STATUSES.join(", ")}")
       end
     end
 

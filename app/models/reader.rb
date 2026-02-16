@@ -1,6 +1,8 @@
 class Reader < ApplicationRecord
   self.implicit_order_column = "created_at"
 
+  has_many :book_borrows, dependent: :destroy
+
   validates :serial_number, presence: true,
     format: {with: /\A\d{6}\z/, message: "must be a six-digit number"},
     uniqueness: true

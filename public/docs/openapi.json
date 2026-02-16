@@ -29,7 +29,7 @@
         "tags": [
           "Books"
         ],
-        "description": "Returns a paginated list of all books",
+        "description": "Returns a paginated list of all books with their borrow status",
         "parameters": [
           {
             "name": "page",
@@ -48,11 +48,24 @@
             "schema": {
               "type": "integer"
             }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "enum": [
+              "borrowed",
+              "available"
+            ],
+            "description": "Filter by borrow status:\n * `borrowed` \n * `available` \n ",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
           "200": {
-            "description": "Books listed successfully",
+            "description": "Books filtered by status",
             "content": {
               "application/json": {
                 "schema": {
@@ -61,7 +74,7 @@
                     "data": {
                       "type": "array",
                       "items": {
-                        "$ref": "#/components/schemas/Book"
+                        "$ref": "#/components/schemas/BookWithStatus"
                       }
                     },
                     "meta": {
@@ -226,7 +239,7 @@
         "tags": [
           "Books"
         ],
-        "description": "Returns a single book by ID",
+        "description": "Returns a single book by ID, including borrow history",
         "parameters": [
           {
             "name": "id",
@@ -241,14 +254,14 @@
         ],
         "responses": {
           "200": {
-            "description": "Book found",
+            "description": "Book with borrow history",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
                     "data": {
-                      "$ref": "#/components/schemas/Book"
+                      "$ref": "#/components/schemas/BookWithBorrows"
                     }
                   },
                   "required": [
@@ -404,6 +417,185 @@
         "responses": {
           "200": {
             "description": "Book deleted successfully"
+          },
+          "404": {
+            "description": "Book not found"
+          }
+        }
+      }
+    },
+    "/books/{id}/borrow": {
+      "post": {
+        "summary": "Borrow a book",
+        "tags": [
+          "Books"
+        ],
+        "description": "Borrows a book for a reader. Books are borrowed for 30 days.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "format": "uuid",
+            "description": "Book ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Book borrowed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/BookBorrow"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Book already borrowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "message"
+                      ]
+                    },
+                    "errors": {
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Book not found"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "reader_id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "Reader ID"
+                  }
+                },
+                "required": [
+                  "reader_id"
+                ]
+              },
+              "examples": {
+                "borrow_book": {
+                  "summary": "Borrow a book",
+                  "value": {
+                    "reader_id": "550e8400-e29b-41d4-a716-446655440000"
+                  }
+                },
+                "already_borrowed": {
+                  "summary": "Book already borrowed",
+                  "value": {
+                    "reader_id": "550e8400-e29b-41d4-a716-446655440000"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/books/{id}/return": {
+      "post": {
+        "summary": "Return a book",
+        "tags": [
+          "Books"
+        ],
+        "description": "Returns a borrowed book",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "format": "uuid",
+            "description": "Book ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Book returned successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/BookBorrow"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Book not currently borrowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "message"
+                      ]
+                    },
+                    "errors": {
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
           },
           "404": {
             "description": "Book not found"
@@ -972,6 +1164,121 @@
           "serial_number",
           "title",
           "author"
+        ]
+      },
+      "BookWithStatus": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "serial_number": {
+            "type": "string",
+            "example": "100001"
+          },
+          "title": {
+            "type": "string",
+            "example": "The Great Gatsby"
+          },
+          "author": {
+            "type": "string",
+            "example": "F. Scott Fitzgerald"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "borrowed",
+              "available"
+            ],
+            "example": "available"
+          }
+        },
+        "required": [
+          "id",
+          "serial_number",
+          "title",
+          "author",
+          "status"
+        ]
+      },
+      "BookBorrow": {
+        "type": "object",
+        "properties": {
+          "reader_card_number": {
+            "type": "string",
+            "example": "100001"
+          },
+          "reader_email": {
+            "type": "string",
+            "format": "email",
+            "example": "reader@example.com"
+          },
+          "borrow_date": {
+            "type": "string",
+            "format": "date",
+            "example": "2026-02-16"
+          },
+          "due_date": {
+            "type": "string",
+            "format": "date",
+            "example": "2026-03-18"
+          },
+          "return_date": {
+            "type": "string",
+            "format": "date",
+            "nullable": true,
+            "example": null
+          }
+        },
+        "required": [
+          "reader_card_number",
+          "reader_email",
+          "borrow_date",
+          "due_date"
+        ]
+      },
+      "BookWithBorrows": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "serial_number": {
+            "type": "string",
+            "example": "100001"
+          },
+          "title": {
+            "type": "string",
+            "example": "The Great Gatsby"
+          },
+          "author": {
+            "type": "string",
+            "example": "F. Scott Fitzgerald"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "borrowed",
+              "available"
+            ],
+            "example": "available"
+          },
+          "borrows": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BookBorrow"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "serial_number",
+          "title",
+          "author",
+          "status",
+          "borrows"
         ]
       }
     }

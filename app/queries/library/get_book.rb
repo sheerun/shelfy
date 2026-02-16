@@ -9,10 +9,10 @@ module Library
     def run
       return validation_failure unless valid?
 
-      book = Book.find(id)
+      book = Book.with_borrows.find(id)
 
       Library::Result.new(
-        data: Library::BookBlueprint.render_as_hash(book)
+        data: Library::BookBlueprint.render_as_hash(book, view: :with_borrows)
       )
     end
 
