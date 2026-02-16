@@ -1,4 +1,4 @@
-# Shelfy Library
+# Shelfy Library [![CI](https://github.com/sheerun/shelfy/actions/workflows/ci.yml/badge.svg)](https://github.com/sheerun/shelfy/actions/workflows/ci.yml)
 
 API for a library management system (recruitment task solution)
 
