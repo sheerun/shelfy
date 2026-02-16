@@ -76,6 +76,32 @@ It implied following flags:
 
 RSpec is the chosen testing framework for this project for its behavior-driven syntax.
 
+### Application architecture (Commands / Queries)
+
+Business logic is implemented as small, explicit use-cases rather than being spread across controllers and ActiveRecord models. Commands (writes) and Queries (reads) live under `app/commands/library` and `app/queries/library` and share the same `#execute` API.
+
+Each use-case returns a `Library::Result` that carries `status`, `data`, and `errors`, so controllers stay thin and response shaping is consistent. This also keeps validation and error translation close to the use-case, without relying on exceptions for expected user mistakes.
+
+Serialization is handled via Blueprinter blueprints (`app/serializers/library`) to keep response shapes stable and to make eager-loading decisions explicit inside queries (avoid accidental N+1s).
+
+### Data model choices
+
+All primary keys use UUIDv7 (PostgreSQL 18 supports it natively) to keep identifiers globally unique and roughly time-ordered, which works well for distributed systems and avoids exposing sequential IDs.
+
+Models are intentionally kept “boring”: schema, associations, and simple invariants only. Use-case specific rules (like whether a reminder should be sent) are enforced by commands/jobs.
+
+### Background jobs (Solid Queue)
+
+The app uses Solid Queue for background job processing to keep infrastructure minimal while still supporting scheduled work. Jobs are designed to be idempotent and safe to retry.
+
+### E-mail reminders for due books
+
+When a book is borrowed, two reminder records are created: a 3-day warning and a due-date alert. Each reminder is scheduled via Solid Queue using `wait_until` so delivery happens on the intended day without polling.
+
+Reminder sending is guarded by a “send-once” approach implemented as a command run by the job: the reminder row is locked, the command exits if `sent_at` is already set, and it also skips sending if the borrow was already returned. The mail delivery and `sent_at` update happen inside the same DB transaction to avoid duplicates under concurrency/retries.
+
+The e-mail content is generated from the `book_borrow` association (book title, serial number, due date) so messages reflect the actual borrow state and remain correct even if job execution is delayed.
+
 ### API Documentation
 
 The API is accessible at `/` which redirects to the documentation.
