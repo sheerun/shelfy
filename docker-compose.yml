@@ -7,7 +7,7 @@ services:
       context: .
       dockerfile: Dockerfile.dev
 
-    command: bash -c 'rm /rails/tmp/pids/* && bin/setup'
+    command: bin/setup
 
     user: "1000:1000"
 
