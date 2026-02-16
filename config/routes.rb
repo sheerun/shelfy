@@ -7,4 +7,5 @@ Rails.application.routes.draw do
   end
 
   resources :readers, only: [:index, :show, :create, :update, :destroy]
+  resources :books, only: [:index, :show, :create, :update, :destroy]
 end

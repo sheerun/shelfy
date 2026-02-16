@@ -23,6 +23,394 @@
     }
   ],
   "paths": {
+    "/books": {
+      "get": {
+        "summary": "List books",
+        "tags": [
+          "Books"
+        ],
+        "description": "Returns a paginated list of all books",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "description": "Page number (default: 1)",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "required": false,
+            "description": "Items per page (default: 20, max: 50)",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Books listed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Book"
+                      }
+                    },
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "total": {
+                          "type": "integer"
+                        },
+                        "page": {
+                          "type": "integer"
+                        },
+                        "per_page": {
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "total",
+                        "page",
+                        "per_page"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "meta"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Register a new book",
+        "tags": [
+          "Books"
+        ],
+        "description": "Creates a new book with the given attributes",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "Book registered successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Book"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Duplicate serial number",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "message"
+                      ]
+                    },
+                    "errors": {
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "book": {
+                    "type": "object",
+                    "properties": {
+                      "serial_number": {
+                        "type": "string",
+                        "example": "100001"
+                      },
+                      "title": {
+                        "type": "string",
+                        "example": "The Great Gatsby"
+                      },
+                      "author": {
+                        "type": "string",
+                        "example": "F. Scott Fitzgerald"
+                      }
+                    },
+                    "required": [
+                      "serial_number",
+                      "title",
+                      "author"
+                    ]
+                  }
+                },
+                "required": [
+                  "book"
+                ]
+              },
+              "examples": {
+                "valid_book": {
+                  "summary": "Valid book registration",
+                  "value": {
+                    "book": {
+                      "serial_number": "100001",
+                      "title": "The Great Gatsby",
+                      "author": "F. Scott Fitzgerald"
+                    }
+                  }
+                },
+                "invalid_book": {
+                  "summary": "Invalid book - missing fields",
+                  "value": {
+                    "book": {
+                      "serial_number": "",
+                      "title": "",
+                      "author": ""
+                    }
+                  }
+                },
+                "duplicate_serial_number": {
+                  "summary": "Duplicate serial number",
+                  "value": {
+                    "book": {
+                      "serial_number": "100001",
+                      "title": "Another Book",
+                      "author": "Another Author"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/books/{id}": {
+      "get": {
+        "summary": "Get a book",
+        "tags": [
+          "Books"
+        ],
+        "description": "Returns a single book by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "format": "uuid",
+            "description": "Book ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Book found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Book"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Book not found"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update a book",
+        "tags": [
+          "Books"
+        ],
+        "description": "Updates an existing book's attributes",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "format": "uuid",
+            "description": "Book ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Book updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Book"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Book not found"
+          },
+          "422": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "message"
+                      ]
+                    },
+                    "errors": {
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "book": {
+                    "type": "object",
+                    "properties": {
+                      "serial_number": {
+                        "type": "string",
+                        "example": "200002"
+                      },
+                      "title": {
+                        "type": "string",
+                        "example": "Updated Title"
+                      },
+                      "author": {
+                        "type": "string",
+                        "example": "Updated Author"
+                      }
+                    }
+                  }
+                },
+                "required": [
+                  "book"
+                ]
+              },
+              "examples": {
+                "update_title": {
+                  "summary": "Update book title",
+                  "value": {
+                    "book": {
+                      "title": "Updated Title"
+                    }
+                  }
+                },
+                "duplicate_serial_number_update": {
+                  "summary": "Update with duplicate serial number",
+                  "value": {
+                    "book": {
+                      "serial_number": "200001"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a book",
+        "tags": [
+          "Books"
+        ],
+        "description": "Removes a book from the system",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "format": "uuid",
+            "description": "Book ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Book deleted successfully"
+          },
+          "404": {
+            "description": "Book not found"
+          }
+        }
+      }
+    },
     "/health/live": {
       "get": {
         "summary": "Liveness probe",
@@ -557,6 +945,33 @@
           "serial_number",
           "email",
           "full_name"
+        ]
+      },
+      "Book": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "serial_number": {
+            "type": "string",
+            "example": "100001"
+          },
+          "title": {
+            "type": "string",
+            "example": "The Great Gatsby"
+          },
+          "author": {
+            "type": "string",
+            "example": "F. Scott Fitzgerald"
+          }
+        },
+        "required": [
+          "id",
+          "serial_number",
+          "title",
+          "author"
         ]
       }
     }

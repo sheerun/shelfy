@@ -32,6 +32,16 @@ RSpec.configure do |config|
               full_name: {type: :string, example: "Jane Doe"}
             },
             required: %w[id serial_number email full_name]
+          },
+          Book: {
+            type: :object,
+            properties: {
+              id: {type: :string, format: :uuid},
+              serial_number: {type: :string, example: "100001"},
+              title: {type: :string, example: "The Great Gatsby"},
+              author: {type: :string, example: "F. Scott Fitzgerald"}
+            },
+            required: %w[id serial_number title author]
           }
         }
       }
