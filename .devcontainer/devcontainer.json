@@ -2,7 +2,10 @@
 // For config options, see the README at: https://github.com/devcontainers/templates/tree/main/src/ruby
 {
   "name": "shelfy",
-  "dockerComposeFile": "../docker-compose.yml",
+  "dockerComposeFile": [
+    "../docker-compose.yml",
+    "docker-compose.yml"
+  ],
   "service": "app",
   "workspaceFolder": "/rails",
 
@@ -21,6 +24,8 @@
   },
 
   "runServices": ["app", "db"],
+
+  "postCreateCommand": "bin/setup --skip-server",
 
   "forwardPorts": [3000, 5432],
 
